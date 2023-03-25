@@ -21,6 +21,7 @@ namespace API.Mapper
                 .ForMember(p => p.EstadoNombre, x => x.MapFrom(a => a.Municipio!.Estado!.Name))
                 .ForMember(p => p.PaisNombre, x => x.MapFrom(a => a.Municipio!.Estado!.Pais!.Name))
                 .ForMember(p => p.MunicipioNombre, x => x.MapFrom(a => a.Municipio!.Name))
+                .ForMember(p => p.CodigoPostal, x => x.MapFrom(a => a.Name))
                 .ForMember(p => p.Nombre, x => x.MapFrom(a => a.Name));
 
             CreateMap<Colonia, ColoniaDto>()
