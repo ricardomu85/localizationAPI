@@ -1,14 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class FallbackController : ControllerBase
+    [AllowAnonymous]
+    public class FallbackController : BaseController
     {
         public IActionResult Index()
         {
-            return Ok("WebAPI Localizacion corriento");
+            return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "index.html"), "text/html");
         }
     }
 }

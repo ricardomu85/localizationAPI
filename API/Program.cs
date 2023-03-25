@@ -4,6 +4,10 @@ using API.Data;
 using API.Mapper;
 using Microsoft.Net.Http.Headers;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +18,13 @@ builder.Services.AddCors(options =>
    });
 
 
-builder.Services.AddControllers().AddJsonOptions(a => a.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles); ;
+builder.Services.AddControllers(opt =>
+        {
+            var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+            opt.Filters.Add(new AuthorizeFilter(policy));
+        }).AddJsonOptions(a => a.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+builder.Services.TryAddSingleton<ISystemClock, SystemClock>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -116,7 +126,7 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "Error en migraci�n");
+        logger.LogError(ex, "Error en migración");
     }
 }
 app.Run();
