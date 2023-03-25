@@ -47,15 +47,8 @@ namespace API.Controllers
         {
             var cps = await _context.CodigosPostales!.Include(p => p.Municipio).ThenInclude(p => p!.Estado).ThenInclude(p => p!.Pais).Where(p => p.MunicipioId == municipioId).ToListAsync();
             var dtos = _mapper.Map<IReadOnlyList<CodigoPostalDto>>(cps);
-            var tmp = dtos.Select(x => new
-            {
-                x.Id,
-                x.Nombre,
-                x.PaisNombre,
-                x.EstadoNombre,
-                x.MunicipioNombre
-            });
-            return Ok(tmp);
+
+            return Ok(dtos);
         }
 
         [HttpGet("codigopostal/{codigoPostal}")]
