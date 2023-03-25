@@ -85,20 +85,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseDefaultFiles();
-app.UseStaticFiles();
 app.UseRouting();
+
 app.UseCors(policy =>
-               policy
-                   .WithOrigins(
-                                   "https://localhost:5001",
-                                   "http://localhost:5000")
-                   .AllowAnyMethod()
-                   .WithHeaders(HeaderNames.ContentType));
+            policy
+                .WithOrigins("https://localhost:5001",
+                                "http://localhost:5000")
+                .AllowAnyMethod()
+                .WithHeaders(HeaderNames.ContentType));
 
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints => endpoints.MapControllers());
 
 using (var scope = app.Services.CreateScope())
 {
