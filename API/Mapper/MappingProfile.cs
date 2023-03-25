@@ -19,7 +19,7 @@ namespace API.Mapper
 
             CreateMap<CodigoPostal, CodigoPostalDto>()
                 .ForMember(p => p.EstadoNombre, x => x.MapFrom(a => a.Municipio!.Estado!.Name))
-                .ForMember(p => p.PaisNombre, x => x.MapFrom(a => a.Municipio!.Estado!.Name))
+                .ForMember(p => p.PaisNombre, x => x.MapFrom(a => a.Municipio!.Estado!.Pais!.Name))
                 .ForMember(p => p.MunicipioNombre, x => x.MapFrom(a => a.Municipio!.Name))
                 .ForMember(p => p.Nombre, x => x.MapFrom(a => a.Name));
 
