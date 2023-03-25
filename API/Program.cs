@@ -3,23 +3,18 @@ using Microsoft.EntityFrameworkCore;
 using API.Data;
 using API.Mapper;
 using Microsoft.Net.Http.Headers;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddCors(options =>
-  {
-      options.AddPolicy(name: "_myAllowSpecificOrigins",
-                      builder =>
-                      {
-                          builder.WithOrigins("https://localhost:5001",
-                                              "http://localhost:5000");
-                      });
-  });
+   {
+       options.AddPolicy("CorsPolicy", builder => builder.WithOrigins("http://localhost:3000", "http://localhost:3007").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+   });
 
 
-
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(a => a.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles); ;
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -42,13 +37,14 @@ else if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DATABASE_URL"
     var pgUserPass = connUrl.Split("@")[0];
     var pgHostPortDb = connUrl.Split("@")[1];
     var pgHostPort = pgHostPortDb.Split("/")[0];
-    var pgDb = pgHostPortDb.Split("/")[1].Split("?")[0];
+    var pgDb = pgHostPortDb.Split("/")[1];
     var pgUser = pgUserPass.Split(":")[0];
     var pgPass = pgUserPass.Split(":")[1];
     var pgHost = pgHostPort.Split(":")[0];
     var pgPort = pgHostPort.Split(":")[1];
+    var updatedHost = pgHost.Replace("flycast", "internal");
 
-    connString = $"Server={pgHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
+    connString = $"Server={updatedHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
     log.LogInformation($"Connection string production: {connString}");
 
 
@@ -84,18 +80,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseRouting();
-
-app.UseCors(policy =>
-            policy
-                .WithOrigins("https://localhost:5001",
-                                "http://localhost:5000")
-                .AllowAnyMethod()
-                .WithHeaders(HeaderNames.ContentType));
-
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors("CorsPolicy");
 
-app.UseEndpoints(endpoints => endpoints.MapControllers());
+app.MapControllers();
+app.MapFallbackToController("Index", "Fallback");
 
 using (var scope = app.Services.CreateScope())
 {

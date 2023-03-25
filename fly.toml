@@ -1,26 +1,32 @@
-# fly.toml file generated for localizacion on 2023-03-24T18:31:32-06:00
+# fly.toml file generated for acoficoffee on 2023-03-02T18:43:26-06:00
 
 app = "localizacion"
 kill_signal = "SIGINT"
 kill_timeout = 5
-mounts = []
-primary_region = "gdl"
 processes = []
 
 [build]
   image = "rickytm/localizacion:latest"
 
+[env]
+  ASPNETCORE_URLS = "http://+:8080"
 
+[experimental]
+  auto_rollback = true
 
 [[services]]
-  internal_port = 5000  
+  http_checks = []
+  internal_port = 8080
+  processes = ["app"]
   protocol = "tcp"
-
+  script_checks = []
   [services.concurrency]
     hard_limit = 25
     soft_limit = 20
+    type = "connections"
 
-  [[services.ports]]    
+  [[services.ports]]
+    force_https = true
     handlers = ["http"]
     port = 80
 
@@ -29,5 +35,7 @@ processes = []
     port = 443
 
   [[services.tcp_checks]]
-    interval = 10000
-    timeout = 2000
+    grace_period = "1s"
+    interval = "15s"
+    restart_limit = 0
+    timeout = "2s"
