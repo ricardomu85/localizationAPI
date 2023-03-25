@@ -11,10 +11,10 @@ processes = []
   image = "rickytm/localizacion:latest"
 
 [env]
-  ASPNETCORE_URLS = "http://+:8080"
+  ASPNETCORE_URLS = "http://+:5000"
 
 [[services]]
-  internal_port = 8080
+  internal_port = 5000
   processes = ["app"]
   protocol = "tcp"
   [services.concurrency]

@@ -2,10 +2,22 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using API.Data;
 using API.Mapper;
+using Microsoft.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddCors(options =>
+  {
+      options.AddPolicy(name: "_myAllowSpecificOrigins",
+                      builder =>
+                      {
+                          builder.WithOrigins("https://localhost:5001",
+                                              "http://localhost:5000");
+                      });
+  });
+
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -75,6 +87,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseRouting();
+app.UseCors(policy =>
+               policy
+                   .WithOrigins(
+                                   "https://localhost:5001",
+                                   "http://localhost:5000")
+                   .AllowAnyMethod()
+                   .WithHeaders(HeaderNames.ContentType));
+
 app.UseAuthorization();
 
 app.MapControllers();
