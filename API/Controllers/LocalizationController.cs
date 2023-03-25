@@ -8,13 +8,14 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
-    [AllowAnonymous]
-    public class LocalizationController : BaseController
+    [Route("api/[controller]")]
+    [ApiController]
+    public class LocalizacionController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
         private readonly IMapper _mapper;
 
-        public LocalizationController(ApplicationDBContext context, IMapper mapper)
+        public LocalizacionController(ApplicationDBContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

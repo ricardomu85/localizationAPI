@@ -11,18 +11,9 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddCors(options =>
-   {
-       options.AddPolicy("CorsPolicy", builder => builder.WithOrigins("http://localhost:3000", "http://localhost:3007").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
-   });
 
+builder.Services.AddControllers();
 
-builder.Services.AddControllers(opt =>
-        {
-            var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
-            opt.Filters.Add(new AuthorizeFilter(policy));
-        }).AddJsonOptions(a => a.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-builder.Services.TryAddSingleton<ISystemClock, SystemClock>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -82,6 +73,7 @@ builder.Services.AddSingleton(mapper);
 
 var app = builder.Build();
 
+app.UseRouting();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -89,15 +81,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseDefaultFiles();
-app.UseStaticFiles();
-app.UseAuthentication();
-app.UseAuthorization();
-app.UseCors("CorsPolicy");
 
-app.MapControllers();
-app.MapFallbackToController("Index", "Fallback");
-
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 using (var scope = app.Services.CreateScope())
 {
     var service = scope.ServiceProvider;
