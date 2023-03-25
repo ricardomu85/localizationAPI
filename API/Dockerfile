@@ -3,14 +3,11 @@ WORKDIR /app
 EXPOSE 8080
 
 # copy .csproj and restore as distinct layers
-COPY "LocalizacionAPI.sln" "LocalizacionAPI.sln"
-COPY "API/API.csproj" "API/API.csproj"
-
-RUN dotnet restore "LocalizacionAPI.sln"
+COPY *.csproj ./
+RUN dotnet restore
 
 #copy everything else build
-COPY . .
-WORKDIR /app
+COPY . ./
 RUN dotnet publish -c Release -o out
 
 #build a runtime image
