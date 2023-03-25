@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using System.Net;
 using API.Data;
 using API.Dto.Localization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class LocalizationController : ControllerBase
+    [AllowAnonymous]
+    public class LocalizationController : BaseController
     {
         private readonly ApplicationDBContext _context;
         private readonly IMapper _mapper;
