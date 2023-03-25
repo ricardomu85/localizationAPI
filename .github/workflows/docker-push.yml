@@ -26,4 +26,4 @@ jobs:
         with:
           context: "{{defaultContext}}:API"
           push: true
-          tags: rickytm/localizacion:latest    
+          tags: rickytm/localizacion:latest  
