@@ -1,0 +1,184 @@
+openapi: 3.0.0
+info:
+  title: Ejemplo de API de localización
+  version: 1.0.0
+servers:
+  - url: https://localizacion.fly.dev
+paths:
+  /api/Localizacion/estados:
+    get:
+      summary: Devuelve una lista de estados
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EstadoDto'
+components:
+  schemas:
+    EstadoDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        paisNombre:
+          type: string
+paths:
+  /api/Localizacion/municipios/estadoId:
+    get:
+      summary: Devuelve una lista de municipios de acuerdo al Id del Estado
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MunicipioDto'
+components:
+  schemas:
+    MunicipioDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        paisNombre:
+          type: string
+        estadoNombre:
+          type: string
+paths:
+  /api/Localizacion/codigopostales/municipioId:
+    get:
+      summary: Devuelve una lista de código postales de acuerdo al Id del Municipio
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodigoPostalDto'
+components:
+  schemas:
+    CodigoPostalDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        paisNombre:
+          type: string
+        estadoNombre:
+          type: string
+        municipioNombre:
+          type: string
+        codigoPostal:
+          type: string
+        colonias:
+          type: array
+paths:
+  /api/Localizacion/codigopostal/codigoPostal:
+    get:
+      summary: Devuelve la informción del código postal y las colonias relacionadas
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/CodigoPostalDto'
+components:
+  schemas:
+    CodigoPostalDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        paisNombre:
+          type: string
+        estadoNombre:
+          type: string
+        municipioNombre:
+          type: string
+        codigoPostal:
+          type: string
+        colonias:
+          type: array
+paths:
+  /api/Localizacion/colonias/codigoPostalId:
+    get:
+      summary: Devuelve una lista de colonias de acuerdo al Id del código postal
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ColoniaDto'
+components:
+  schemas:
+    CodigoPostalDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        paisNombre:
+          type: string
+        estadoNombre:
+          type: string
+        municipioNombre:
+          type: string
+        codigoPostal:
+          type: string
+        codigoPostalId:
+          type: integer
+paths:
+  /api/Localizacion/coloniasporcodigo/cocodigoPostaldigoPostalId:
+    get:
+      summary: Devuelve una lista de colonias de acuerdo al código postal
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ColoniaDto'
+components:
+  schemas:
+    CodigoPostalDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        paisNombre:
+          type: string
+        estadoNombre:
+          type: string
+        municipioNombre:
+          type: string
+        codigoPostal:
+          type: string
+        codigoPostalId:
+          type: integer

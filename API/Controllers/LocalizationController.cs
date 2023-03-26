@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Net;
 using API.Data;
 using API.Dto.Localization;
-using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
@@ -42,7 +41,7 @@ namespace API.Controllers
         }
 
         [HttpGet("codigopostales/{municipioId}")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IReadOnlyList<CodigoPostalDto>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult> GetCodigoPostales(int municipioId)
         {
             var cps = await _context.CodigosPostales!.Include(p => p.Municipio).ThenInclude(p => p!.Estado).ThenInclude(p => p!.Pais).Where(p => p.MunicipioId == municipioId).ToListAsync();
