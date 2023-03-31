@@ -40,6 +40,16 @@ namespace API.Controllers
             return Ok(municipiosDTO);
         }
 
+        [HttpGet("codigopostalesporestado/{estadoId}")]
+        [ProducesResponseType(typeof(IReadOnlyList<CodigoPostalDto>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult> GetCodigoPostalesPorEstado(int estadoId)
+        {
+            var cps = await _context.CodigosPostales!.Include(p => p.Municipio).ThenInclude(p => p!.Estado).ThenInclude(p => p!.Pais).Where(p => p.Municipio!.EstadoId == estadoId).ToListAsync();
+            var dtos = _mapper.Map<IReadOnlyList<CodigoPostalDto>>(cps);
+
+            return Ok(dtos);
+        }
+
         [HttpGet("codigopostales/{municipioId}")]
         [ProducesResponseType(typeof(IReadOnlyList<CodigoPostalDto>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult> GetCodigoPostales(int municipioId)
