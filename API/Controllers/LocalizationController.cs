@@ -87,5 +87,51 @@ namespace API.Controllers
             return Ok(dtos);
         }
 
+        [HttpGet("informacionporcoloniaid/{coloniaId}")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult> GetInformacionPorColoniaId(int coloniaId)
+        {
+            // Validate the coloniaId parameter
+            if (coloniaId <= 0)
+            {
+                ModelState.AddModelError(nameof(coloniaId), "The colony ID must be greater than zero.");
+                return BadRequest(ModelState);
+            }
+
+            var result = await (from estado in _context.Estados
+                                join municipio in _context.Municipios! on estado.Id equals municipio.EstadoId
+                                join codigoPostal in _context.CodigosPostales! on municipio.Id equals codigoPostal.MunicipioId
+                                join colonia in _context.Colonias! on codigoPostal.Id equals colonia.CodigoPostalId
+                                where colonia.Id == coloniaId
+                                select new
+                                {
+                                    PaisId = estado.PaisId,
+                                    EstadoId = estado.Id,
+                                    EstadoNombre = estado.Name,
+                                    MunicipioId = municipio.Id,
+                                    MunicipioNombre = municipio.Name,
+                                    CodigoPostalId = codigoPostal.Id,
+                                    CodigoPostalNombre = codigoPostal.Name,
+                                    ColoniaId = colonia.Id,
+                                    ColoniaNombre = colonia.Name
+                                })
+                           .Distinct()
+                           .OrderBy(x => x.EstadoNombre) // ordenar por el nombre del estado
+                           .FirstOrDefaultAsync();
+            if (result is null)
+            {
+                return NotFound();
+            }
+
+            var estados = await _context.Estados!.Where(p => p.PaisId == result.PaisId).Select(e => new { value = e.Id, text = e.Name }).ToListAsync();
+            var municipios = await _context.Municipios!.Where(p => p.EstadoId == result.EstadoId).Select(m => new { value = m.Id, text = m.Name }).ToListAsync();
+            var codigoPostales = await _context.CodigosPostales!.Where(p => p.MunicipioId == result.MunicipioId).Select(c => new { value = c.Id, text = c.Name }).ToListAsync();
+            var colonias = await _context.Colonias!.Where(p => p.CodigoPostalId == result.CodigoPostalId).Select(c => new { value = c.Id, text = c.Name }).ToListAsync();
+
+
+            return Ok(new { estados, municipios, codigoPostales, colonias });
+        }
+
     }
 }
