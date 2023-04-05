@@ -124,10 +124,10 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            var estados = await _context.Estados!.Where(p => p.PaisId == result.PaisId).Select(e => new { value = e.Id, text = e.Name }).ToListAsync();
-            var municipios = await _context.Municipios!.Where(p => p.EstadoId == result.EstadoId).Select(m => new { value = m.Id, text = m.Name }).ToListAsync();
-            var codigoPostales = await _context.CodigosPostales!.Where(p => p.MunicipioId == result.MunicipioId).Select(c => new { value = c.Id, text = c.Name }).ToListAsync();
-            var colonias = await _context.Colonias!.Where(p => p.CodigoPostalId == result.CodigoPostalId).Select(c => new { value = c.Id, text = c.Name }).ToListAsync();
+            var estados = await _context.Estados!.Where(p => p.PaisId == result.PaisId).Select(e => new { id = e.Id, nombre = e.Name }).ToListAsync();
+            var municipios = await _context.Municipios!.Where(p => p.EstadoId == result.EstadoId).Select(m => new { id = m.Id, nombre = m.Name }).ToListAsync();
+            var codigoPostales = await _context.CodigosPostales!.Where(p => p.MunicipioId == result.MunicipioId).Select(c => new { id = c.Id, nombre = c.Name }).ToListAsync();
+            var colonias = await _context.Colonias!.Where(p => p.CodigoPostalId == result.CodigoPostalId).Select(c => new { id = c.Id, nombre = c.Name }).ToListAsync();
 
 
             return Ok(new { estados, municipios, codigoPostales, colonias });
