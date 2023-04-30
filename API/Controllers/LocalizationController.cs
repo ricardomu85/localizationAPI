@@ -30,6 +30,15 @@ namespace API.Controllers
             return Ok(estadosDTO);
         }
 
+        [HttpGet("estados/{nombre}")]
+        [ProducesResponseType(typeof(IReadOnlyList<EstadoDto>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult> GetEstados(string nombre)
+        {
+            var estados = await _context.Estados!.Include(p => p.Pais).Where(x => x.Name == nombre).OrderBy(x => x.Name).ToListAsync();
+            var estadosDTO = _mapper.Map<IReadOnlyList<EstadoDto>>(estados);
+            return Ok(estadosDTO);
+        }
+
         [HttpGet("municipios/{estadoId}")]
         [ProducesResponseType(typeof(IReadOnlyList<MunicipioDto>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<IReadOnlyList<MunicipioDto>>> GetMunicipios(int estadoId)
