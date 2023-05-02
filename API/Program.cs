@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using API.Extensions;
+using AspNetCoreRateLimit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,49 +21,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var log = builder.Services.BuildServiceProvider().GetRequiredService<ILogger<Program>>();
-string connString;
-if (builder.Environment.IsDevelopment())
-{
-    connString = builder.Configuration.GetConnectionString("ConnectionString")!;
-    log.LogInformation($"Connection string development: {connString}");
-}
-else if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DATABASE_URL")))
-{
-    // Use connection string provided at runtime by FlyIO.
-    var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL")!;
-    log.LogInformation($"Connection string DATABASE_URL: {connUrl}");
-
-    // Parse connection URL to connection string for Npgsql
-    connUrl = connUrl.Replace("postgres://", string.Empty);
-    var pgUserPass = connUrl.Split("@")[0];
-    var pgHostPortDb = connUrl.Split("@")[1];
-    var pgHostPort = pgHostPortDb.Split("/")[0];
-    var pgDb = pgHostPortDb.Split("/")[1].Split("?")[0];
-    var pgUser = pgUserPass.Split(":")[0];
-    var pgPass = pgUserPass.Split(":")[1];
-    var pgHost = pgHostPort.Split(":")[0];
-    var pgPort = pgHostPort.Split(":")[1];
-    var updatedHost = pgHost.Replace("flycast", "internal");
-
-    connString = $"Server={updatedHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
-    log.LogInformation($"Connection string production: {connString}");
-
-
-
-}
-else
-{
-    log.LogInformation($"DATABASE_URL is null or empty");
-    connString = builder.Configuration.GetConnectionString("ConnectionString")!;
-    log.LogInformation($"Connection string production : {connString}");
-}
-
-builder.Services.AddDbContext<ApplicationDBContext>(opt =>
-{
-    opt.UseNpgsql(connString,
-    b => b.MigrationsAssembly(typeof(ApplicationDBContext).Assembly.FullName));
-});
+builder.Services.AddRateLimitServices(builder.Configuration);
+builder.Services.AddDbConnectionExtension(builder.Configuration, builder.Environment.IsDevelopment());
 
 var mapperConfig = new MapperConfiguration(mc =>
 {
@@ -73,19 +34,8 @@ builder.Services.AddSingleton(mapper);
 
 var app = builder.Build();
 
-app.UseRouting();
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.AddWebApplicationExtension();
 
-
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
 using (var scope = app.Services.CreateScope())
 {
     var service = scope.ServiceProvider;
