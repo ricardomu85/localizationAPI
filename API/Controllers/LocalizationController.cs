@@ -77,7 +77,7 @@ namespace API.Controllers
 
       var municipios = await _context
             .Municipios!            
-            .Where(x => x.Name!.ToLower().Contains(estado.ToLower()))
+            .Where(x => x.Estado!.Name!.ToLower().Contains(estado.ToLower()))
             .OrderBy(x => x.Name)
             .Select(x => new LocalizationOptionsDto
             {
@@ -97,7 +97,7 @@ namespace API.Controllers
       if (string.IsNullOrEmpty(municipio)) return BadRequest("Municipio es requerido");
       var cps = await _context
             .CodigosPostales!
-            .Where(p => p.Name!.ToLower().Contains(municipio.ToLower()))
+            .Where(p => p.Municipio!.Name!.ToLower().Contains(municipio.ToLower()))
             .OrderBy(x => x.Name)
             .Select(p => new LocalizationOptionsDto
             {
@@ -116,7 +116,7 @@ namespace API.Controllers
       if (string.IsNullOrEmpty(codigoPostal)) return BadRequest("Codigo postal es requerido");
       var colonias = await _context
               .Colonias!
-              .Where(p => p.Name!.ToLower().Contains(codigoPostal.ToLower()))
+              .Where(p => p.CodigoPostal!.Name!.ToLower().Contains(codigoPostal.ToLower()))
               .OrderBy(x => x.Name)
               .Select(p => new LocalizationOptionsDto
               {
